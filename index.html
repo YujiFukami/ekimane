@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>駅伝部のマネージャーさん | ラップタイム計測</title>
+  <meta name="description" content="駅伝・長距離練習のラップタイムを複数ランナー同時に計測できるスマホ対応アプリ" />
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="apple-touch-icon" href="favicon.svg" />
+  <!-- PWA / Web App meta -->
+  <meta name="theme-color" content="hsl(210,70%,45%)" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="駅伝部のマネージャーさん" />
+  <!-- OGP -->
+  <meta property="og:title" content="駅伝部のマネージャーさん" />
+  <meta property="og:description" content="複数ランナーのラップタイムをスマホで簡単計測" />
+  <meta property="og:type" content="website" />
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="header">
+    <h1>駅伝部のマネージャーさん</h1>
+    <button id="themeToggle" class="theme-toggle" aria-label="テーマ切替">🌙</button>
+  </header>
+
+  <main>
+    <!-- Registration Section -->
+    <section id="registration" class="card">
+      <h2>ランナー登録</h2>
+      <form id="runnerForm" class="form">
+        <input type="text" id="runnerName" placeholder="名前または番号" required />
+        <div class="color-palette">
+          <label>色選択:</label>
+          <div class="preset-colors">
+            <label class="color-option"><input type="radio" name="runnerColor" value="#ef5350" checked /><span style="background:#ef5350;"></span></label>
+            <label class="color-option"><input type="radio" name="runnerColor" value="#ff8f00" /><span style="background:#ff8f00;"></span></label>
+            <label class="color-option"><input type="radio" name="runnerColor" value="#fdd835" /><span style="background:#fdd835;"></span></label>
+            <label class="color-option"><input type="radio" name="runnerColor" value="#43a047" /><span style="background:#43a047;"></span></label>
+            <label class="color-option"><input type="radio" name="runnerColor" value="#00897b" /><span style="background:#00897b;"></span></label>
+            <label class="color-option"><input type="radio" name="runnerColor" value="#1e88e5" /><span style="background:#1e88e5;"></span></label>
+            <label class="color-option"><input type="radio" name="runnerColor" value="#5e35b1" /><span style="background:#5e35b1;"></span></label>
+            <label class="color-option"><input type="radio" name="runnerColor" value="#e91e63" /><span style="background:#e91e63;"></span></label>
+            <label class="color-option"><input type="radio" name="runnerColor" value="#00acc1" /><span style="background:#00acc1;"></span></label>
+            <label class="color-option"><input type="radio" name="runnerColor" value="#546e7a" /><span style="background:#546e7a;"></span></label>
+          </div>
+        </div>
+        <button type="submit" class="btn" id="addRunnerBtn">追加</button>
+      </form>
+      <ul id="runnerList" class="runner-list"></ul>
+    </section>
+
+    <!-- Session Settings -->
+    <section id="sessionSetup" class="card">
+      <h2>セッション設定</h2>
+      <div class="session-row">
+        <label for="lapDistance">ラップ距離 (m):</label>
+        <select id="lapDistance">
+          <option value="300">300 m</option>
+          <option value="400">400 m</option>
+          <option value="custom">その他（自由入力）</option>
+        </select>
+        <input type="number" id="lapDistanceCustom" class="hidden" placeholder="距離 (m)" min="1" />
+      </div>
+      <button id="startSession" class="btn start-btn">▶ セッション開始</button>
+    </section>
+
+    <!-- Recording View -->
+    <section id="recordingView" class="card hidden">
+      <div class="recording-header">
+        <div id="timerDisplay" class="timer">00:00.00</div>
+        <div class="recording-actions">
+          <button id="recordAll" class="btn record-all">全員同時</button>
+          <button id="restartSession" class="btn restart-btn">最初から</button>
+          <button id="endSession" class="btn end-btn">終了</button>
+        </div>
+      </div>
+      <div id="runnerButtons" class="grid"></div>
+    </section>
+
+    <!-- Live Track Animation -->
+    <section id="trackSection" class="card hidden">
+      <h2>ライブトラック</h2>
+      <canvas id="trackCanvas"></canvas>
+    </section>
+
+    <!-- Result Table (cross-tab) -->
+    <section id="resultSection" class="card hidden">
+      <h2>ラップ結果</h2>
+      <div id="resultContainer"></div>
+      <button id="exportCsv" class="btn export-btn">CSV エクスポート</button>
+    </section>
+
+    <!-- Summary -->
+    <section id="summaryView" class="card hidden">
+      <h2>サマリ・順位</h2>
+      <!-- Rank transition bump chart -->
+      <canvas id="rankChart" class="rank-chart"></canvas>
+      <div id="summaryContainer"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <button id="showRecording" class="tab-btn active">📋 記録</button>
+    <button id="showSummary" class="tab-btn">🏆 サマリ</button>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
