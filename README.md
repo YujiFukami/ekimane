@@ -166,7 +166,7 @@ MIT License
   <img src="logo.svg" alt="SOFTEX-CELWARE" width="320" />
 </a>
 
-**株式会社ソフテックスセルウェア** — [https://www.softex-celware.com/](https://www.softex-celware.com/)
+**Softex Celware** — [https://www.softex-celware.com/](https://www.softex-celware.com/)
 
 ---
 
