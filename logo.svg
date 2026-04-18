@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 300" role="img" aria-label="SOFTEX-CELWARE">
+  <style>
+    .gray { fill: #9AA29A; }
+    .green { fill: #136B3A; }
+    .logo-text {
+      font-family: 'Arial Black', 'Helvetica', 'Noto Sans JP', sans-serif;
+      font-weight: 900;
+      font-size: 280px;
+    }
+  </style>
+  <text x="0" y="240" class="logo-text" textLength="1500" lengthAdjust="spacingAndGlyphs">
+    <tspan class="gray">SOFT</tspan><tspan class="green">EX-CEL</tspan><tspan class="gray">WARE</tspan>
+  </text>
+</svg>

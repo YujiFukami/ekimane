@@ -1,0 +1,13 @@
+# Claude Code local state
+.claude/
+
+# Personal reference shortcuts (not part of the project)
+関係リンク/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/

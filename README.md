@@ -1,14 +1,19 @@
-# 駅伝部のマネージャーさん
+# 駅伝部のマネージャー（駅マネ）
 
 > 陸上・駅伝部のマネージャー向け、スマホで使えるラップタイム計測Webアプリ
 
-[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-deployed-brightgreen)](https://yujifukami.github.io/ekimane/)
+[![App](https://img.shields.io/badge/▶%20Launch%20App-brightgreen)](https://ekimane-lfqjoymif-yujifukamis-projects.vercel.app/)
+[![GitHub](https://img.shields.io/badge/GitHub-YujiFukami%2Fekimane-181717?logo=github)](https://github.com/YujiFukami/ekimane)
 
 ---
 
-## 📱 デモ
+## 🔗 リンク
 
-**→ [https://yujifukami.github.io/ekimane/](https://yujifukami.github.io/ekimane/)**
+| 種類 | URL |
+|------|-----|
+| 🌐 アプリ（Vercel） | [https://ekimane-lfqjoymif-yujifukamis-projects.vercel.app/](https://ekimane-lfqjoymif-yujifukamis-projects.vercel.app/) |
+| 💻 GitHub リポジトリ | [https://github.com/YujiFukami/ekimane](https://github.com/YujiFukami/ekimane) |
+| 🏢 会社ホームページ | [https://www.softex-celware.com/](https://www.softex-celware.com/) |
 
 ---
 
@@ -152,6 +157,16 @@ cd ekimane
 ## 📄 ライセンス
 
 MIT License
+
+---
+
+## 🏢 開発元
+
+<a href="https://www.softex-celware.com/">
+  <img src="logo.svg" alt="SOFTEX-CELWARE" width="320" />
+</a>
+
+**株式会社ソフテックスセルウェア** — [https://www.softex-celware.com/](https://www.softex-celware.com/)
 
 ---
 

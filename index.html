@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>駅伝部のマネージャーさん | ラップタイム計測</title>
+  <title>駅伝部のマネージャー（駅マネ） | ラップタイム計測</title>
   <meta name="description" content="駅伝・長距離練習のラップタイムを複数ランナー同時に計測できるスマホ対応アプリ" />
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
@@ -12,9 +12,9 @@
   <meta name="theme-color" content="hsl(210,70%,45%)" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="駅伝部のマネージャーさん" />
+  <meta name="apple-mobile-web-app-title" content="駅伝部のマネージャー（駅マネ）" />
   <!-- OGP -->
-  <meta property="og:title" content="駅伝部のマネージャーさん" />
+  <meta property="og:title" content="駅伝部のマネージャー（駅マネ）" />
   <meta property="og:description" content="複数ランナーのラップタイムをスマホで簡単計測" />
   <meta property="og:type" content="website" />
   <!-- Fonts -->
@@ -25,7 +25,7 @@
 </head>
 <body>
   <header class="header">
-    <h1>駅伝部のマネージャーさん</h1>
+    <h1>駅伝部のマネージャー（駅マネ）</h1>
     <button id="themeToggle" class="theme-toggle" aria-label="テーマ切替">🌙</button>
   </header>
 
@@ -67,7 +67,7 @@
         </select>
         <input type="number" id="lapDistanceCustom" class="hidden" placeholder="距離 (m)" min="1" />
       </div>
-      <button id="startSession" class="btn start-btn">▶ セッション開始</button>
+      <p class="session-hint">画面下の緑の大ボタンから開始します。</p>
     </section>
 
     <!-- Recording View -->
@@ -77,7 +77,6 @@
         <div class="recording-actions">
           <button id="recordAll" class="btn record-all">全員同時</button>
           <button id="restartSession" class="btn restart-btn">最初から</button>
-          <button id="endSession" class="btn end-btn">終了</button>
         </div>
       </div>
       <div id="runnerButtons" class="grid"></div>
@@ -103,11 +102,32 @@
       <canvas id="rankChart" class="rank-chart"></canvas>
       <div id="summaryContainer"></div>
     </section>
+
+    <!-- Credits / Company Info -->
+    <section class="credits">
+      <a href="https://www.softex-celware.com/" target="_blank" rel="noopener" class="company-link" aria-label="株式会社ソフテックスセルウェア">
+        <img src="logo.svg" alt="SOFTEX-CELWARE" class="company-logo" />
+      </a>
+      <div class="credits-links">
+        <a href="https://github.com/YujiFukami/ekimane" target="_blank" rel="noopener" class="ext-link">
+          <span aria-hidden="true">🐙</span> ソースコード (GitHub)
+        </a>
+        <a href="https://www.softex-celware.com/" target="_blank" rel="noopener" class="ext-link">
+          <span aria-hidden="true">🏢</span> 会社ホームページ
+        </a>
+      </div>
+    </section>
   </main>
+
+  <!-- Main Action Bar (fixed bottom, above footer) -->
+  <div id="mainActionBar" class="main-action-bar">
+    <button id="mainActionBtn" class="main-action-btn start-mode">▶ セッション開始</button>
+  </div>
 
   <footer class="footer">
     <button id="showRecording" class="tab-btn active">📋 記録</button>
     <button id="showSummary" class="tab-btn">🏆 サマリ</button>
+    <button id="resetAll" class="tab-btn reset-tab">🗑 初期化</button>
   </footer>
 
   <script src="script.js"></script>

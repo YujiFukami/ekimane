@@ -36,6 +36,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  padding-bottom: 150px; /* space for fixed action bar + footer */
 }
 
 header.header {
@@ -198,6 +199,21 @@ ul.runner-list li {
   border-radius: 6px;
 }
 
+.note-badge {
+  display: inline-block;
+  margin-left: 0.4rem;
+  padding: 0.05rem 0.45rem;
+  font-size: 0.78rem;
+  background: rgba(0,0,0,0.08);
+  border-radius: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+[data-theme="dark"] .note-badge {
+  background: rgba(255,255,255,0.14);
+}
+
 .recording-header {
   display: flex;
   justify-content: space-between;
@@ -275,6 +291,11 @@ footer.footer {
   display: flex;
   justify-content: space-around;
   box-shadow: 0 -2px 4px var(--card-shadow);
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 99;
 }
 
 footer .tab-btn {
@@ -315,6 +336,85 @@ footer .tab-btn.active {
 @media (max-width: 600px) {
   header h1 { font-size: 1.2rem; }
   .grid button { min-height: 56px; }
+  .main-action-btn { font-size: 1.05rem; padding: 0.85rem 1rem; min-height: 56px; }
+  body { padding-bottom: 140px; }
+}
+
+/* ==== Main Action Bar (fixed above footer) ==== */
+.main-action-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 56px; /* sits on top of footer */
+  padding: 0.55rem 0.8rem;
+  background: var(--header-bg);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 -4px 10px var(--card-shadow);
+  z-index: 100;
+}
+
+.main-action-btn {
+  width: 100%;
+  min-height: 64px;
+  padding: 1rem 1.2rem;
+  border: none;
+  border-radius: 14px;
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.22);
+  transition: transform 0.1s, background 0.2s, box-shadow 0.2s;
+}
+
+.main-action-btn:active {
+  transform: scale(0.98);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.22);
+}
+
+.main-action-btn.start-mode,
+.main-action-btn.restart-mode {
+  background: hsl(145, 65%, 40%);
+}
+
+.main-action-btn.start-mode:hover,
+.main-action-btn.restart-mode:hover {
+  background: hsl(145, 65%, 48%);
+}
+
+.main-action-btn.end-mode {
+  background: hsl(0, 72%, 50%);
+  animation: end-pulse 1.6s ease-in-out infinite;
+}
+
+.main-action-btn.end-mode:hover {
+  background: hsl(0, 72%, 58%);
+}
+
+@keyframes end-pulse {
+  0%, 100% { box-shadow: 0 4px 14px rgba(200, 40, 40, 0.35); }
+  50%      { box-shadow: 0 4px 22px rgba(200, 40, 40, 0.65); }
+}
+
+/* Hint text under the session setup */
+.session-hint {
+  margin-top: 0.6rem;
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+/* Reset tab in the footer */
+.tab-btn.reset-tab {
+  color: hsl(0, 55%, 45%);
+}
+
+[data-theme="dark"] .tab-btn.reset-tab {
+  color: hsl(0, 65%, 65%);
+}
+
+.tab-btn.reset-tab:hover {
+  opacity: 0.85;
 }
 
 /* Session row */
@@ -372,6 +472,68 @@ footer .tab-btn.active {
 
 [data-theme="dark"] .pace-cell {
   color: hsl(210, 70%, 70%);
+}
+
+/* ==== Credits / Company Info ==== */
+.credits {
+  margin-top: 0.5rem;
+  padding: 1.2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  opacity: 0.85;
+}
+
+.company-link {
+  display: block;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.company-link:hover {
+  opacity: 0.8;
+  transform: translateY(-1px);
+}
+
+.company-logo {
+  display: block;
+  width: min(260px, 70vw);
+  height: auto;
+}
+
+[data-theme="dark"] .company-logo {
+  filter: brightness(1.05) saturate(1.1);
+}
+
+.credits-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem 1rem;
+  font-size: 0.85rem;
+}
+
+.ext-link {
+  color: var(--text);
+  text-decoration: none;
+  opacity: 0.75;
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.12);
+  transition: opacity 0.15s, background 0.2s;
+}
+
+.ext-link:hover {
+  opacity: 1;
+  background: rgba(255,255,255,0.22);
+}
+
+[data-theme="dark"] .ext-link {
+  background: rgba(255,255,255,0.08);
+}
+
+[data-theme="dark"] .ext-link:hover {
+  background: rgba(255,255,255,0.18);
 }
 
 /* Delete button in runner list */

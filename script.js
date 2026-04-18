@@ -15,7 +15,6 @@ const runnerNameInput     = document.getElementById('runnerName');
 const runnerList          = document.getElementById('runnerList');
 const lapDistanceSelect   = document.getElementById('lapDistance');
 const lapDistanceCustom   = document.getElementById('lapDistanceCustom');
-const startSessionBtn     = document.getElementById('startSession');
 const recordingView       = document.getElementById('recordingView');
 const resultSection       = document.getElementById('resultSection');
 const summaryView         = document.getElementById('summaryView');
@@ -28,12 +27,54 @@ const summaryContainer    = document.getElementById('summaryContainer');
 const showRecordingBtn    = document.getElementById('showRecording');
 const showSummaryBtn      = document.getElementById('showSummary');
 const themeToggleBtn      = document.getElementById('themeToggle');
-const endSessionBtn       = document.getElementById('endSession');
 const trackCanvas         = document.getElementById('trackCanvas');
+const mainActionBtn       = document.getElementById('mainActionBtn');
+const resetAllBtn         = document.getElementById('resetAll');
+const registrationSection = document.getElementById('registration');
+const sessionSetupSection = document.getElementById('sessionSetup');
+const trackSection        = document.getElementById('trackSection');
 
 // ==== Utilities ====
 function generateId() {
   return '_' + Math.random().toString(36).substr(2, 9);
+}
+
+// ==== Audio (tap feedback tones) ====
+// ド, レ, ミ, ファ, ソ, ラ, シ, ド, レ, ミ (C4→E5). 11人目以降はオクターブ上げて循環。
+const NOTE_SCALE_HZ = [
+  261.63, 293.66, 329.63, 349.23, 392.00,
+  440.00, 493.88, 523.25, 587.33, 659.26
+];
+let audioCtx = null;
+function getAudioCtx() {
+  if (!audioCtx) {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (Ctx) audioCtx = new Ctx();
+  }
+  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+/** Short pluck tone with attack/decay envelope */
+function playTone(freq, when = 0, durationSec = 0.22, gain = 0.22) {
+  const ctx = getAudioCtx();
+  if (!ctx) return;
+  const t0 = ctx.currentTime + when;
+  const osc = ctx.createOscillator();
+  const g = ctx.createGain();
+  osc.type = 'triangle';
+  osc.frequency.setValueAtTime(freq, t0);
+  g.gain.setValueAtTime(0, t0);
+  g.gain.linearRampToValueAtTime(gain, t0 + 0.01);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + durationSec);
+  osc.connect(g).connect(ctx.destination);
+  osc.start(t0);
+  osc.stop(t0 + durationSec + 0.02);
+}
+function getRunnerFreq(runner) {
+  if (typeof runner.noteIndex !== 'number') return NOTE_SCALE_HZ[0];
+  const base = NOTE_SCALE_HZ[runner.noteIndex % NOTE_SCALE_HZ.length];
+  const octaveUp = Math.floor(runner.noteIndex / NOTE_SCALE_HZ.length);
+  return base * Math.pow(2, octaveUp);
 }
 
 /** elapsed ms → "MM:SS.ss" */
@@ -84,12 +125,22 @@ function getSelectedColor() {
 }
 
 // ==== Runner Registration ====
+const NOTE_NAMES_JA = ['ド','レ','ミ','ファ','ソ','ラ','シ','ド²','レ²','ミ²'];
+function getRunnerNoteLabel(r) {
+  if (typeof r.noteIndex !== 'number') return '';
+  const idx = r.noteIndex % NOTE_NAMES_JA.length;
+  const oct = Math.floor(r.noteIndex / NOTE_NAMES_JA.length);
+  return NOTE_NAMES_JA[idx] + (oct > 0 ? '↑'.repeat(oct) : '');
+}
 function renderRunnerList() {
   runnerList.innerHTML = '';
   runners.forEach(r => {
     const li = document.createElement('li');
     li.style.borderLeft = `4px solid ${r.color}`;
-    li.innerHTML = `<span>${r.name}</span>`;
+    const note = getRunnerNoteLabel(r);
+    li.innerHTML = `<span>${r.name} <small class="note-badge">♪${note}</small></span>`;
+    // 登録済み行をタップすると音を試聴できる
+    li.querySelector('span').addEventListener('click', () => playTone(getRunnerFreq(r)));
     const del = document.createElement('button');
     del.textContent = '✕';
     del.className = 'del-btn';
@@ -106,7 +157,11 @@ runnerForm.addEventListener('submit', e => {
   e.preventDefault();
   const name = runnerNameInput.value.trim();
   if (!name) return;
-  runners.push({ id: generateId(), name, color: getSelectedColor() });
+  // 空いている一番若い音階インデックスを採番（削除後の再追加でも重複しない）
+  const used = new Set(runners.map(r => r.noteIndex));
+  let noteIndex = 0;
+  while (used.has(noteIndex)) noteIndex++;
+  runners.push({ id: generateId(), name, color: getSelectedColor(), noteIndex });
   runnerNameInput.value = '';
   renderRunnerList();
   // Auto-advance color palette to next swatch
@@ -125,8 +180,25 @@ lapDistanceSelect.addEventListener('change', e => {
   }
 });
 
-// ==== Session Start ====
-startSessionBtn.addEventListener('click', () => {
+// ==== Main Action Button (start / end / restart) ====
+let mainActionMode = 'start'; // 'start' | 'end' | 'restart'
+
+function setMainActionMode(mode) {
+  mainActionMode = mode;
+  mainActionBtn.classList.remove('start-mode', 'end-mode', 'restart-mode');
+  if (mode === 'start') {
+    mainActionBtn.textContent = '▶ セッション開始';
+    mainActionBtn.classList.add('start-mode');
+  } else if (mode === 'end') {
+    mainActionBtn.textContent = '■ セッション終了';
+    mainActionBtn.classList.add('end-mode');
+  } else if (mode === 'restart') {
+    mainActionBtn.textContent = '▶ 次のセッションを開始';
+    mainActionBtn.classList.add('restart-mode');
+  }
+}
+
+function beginSession() {
   if (runners.length === 0) {
     alert('ランナーを最低1人登録してください。');
     return;
@@ -143,14 +215,40 @@ startSessionBtn.addEventListener('click', () => {
     lapDistance = parseInt(lapDistanceSelect.value, 10);
   }
   sessionActive = true;
-  document.getElementById('registration').classList.add('hidden');
-  document.getElementById('sessionSetup').classList.add('hidden');
+  registrationSection.classList.add('hidden');
+  sessionSetupSection.classList.add('hidden');
   recordingView.classList.remove('hidden');
-  document.getElementById('trackSection').classList.remove('hidden');
+  trackSection.classList.remove('hidden');
   resultSection.classList.remove('hidden');
   createRunnerButtons();
   startTimer();
   startTrackAnimation();
+  setMainActionMode('end');
+}
+
+mainActionBtn.addEventListener('click', () => {
+  if (mainActionMode === 'start') {
+    beginSession();
+  } else if (mainActionMode === 'end') {
+    if (!confirm('セッションを終了しますか？')) return;
+    endSession();
+    setMainActionMode('restart');
+  } else if (mainActionMode === 'restart') {
+    if (!confirm('新しいセッションを開始します。現在のラップ記録は破棄されます。よろしいですか？')) return;
+    laps = [];
+    sessionActive = true;
+    document.querySelectorAll('.runner-btn').forEach(b => b.disabled = false);
+    recordAllBtn.disabled = false;
+    restartSessionBtn.disabled = false;
+    resultContainer.innerHTML = '';
+    summaryContainer.innerHTML = '';
+    stopTimer();
+    startTimer();
+    stopTrackAnimation();
+    startTrackAnimation();
+    showRecordingBtn.click();
+    setMainActionMode('end');
+  }
 });
 
 // ==== Timer ====
@@ -176,6 +274,7 @@ function createRunnerButtons() {
     btn.className = 'runner-btn';
     btn.addEventListener('click', () => {
       if (!sessionActive) return;
+      playTone(getRunnerFreq(r));
       recordLap(r.id);
     });
     runnerButtonsDiv.appendChild(btn);
@@ -194,9 +293,11 @@ function recordLap(runnerId) {
 recordAllBtn.addEventListener('click', () => {
   if (!sessionActive) return;
   const now = performance.now() - startTime;
-  runners.forEach(r => {
+  runners.forEach((r, i) => {
     const lapNumber = laps.filter(l => l.runnerId === r.id).length + 1;
     laps.push({ id: generateId(), runnerId: r.id, lapNumber, timeMs: now, comment: '' });
+    // アルペジオ風に微ずらして全員分鳴らす（和音より聴き分けやすい）
+    playTone(getRunnerFreq(r), i * 0.04, 0.18, 0.16);
   });
   renderResultTable();
   updateSummary();
@@ -314,15 +415,9 @@ function endSession() {
   drawTrackFrame(); // freeze final frame
   document.querySelectorAll('.runner-btn').forEach(b => b.disabled = true);
   recordAllBtn.disabled = true;
-  endSessionBtn.disabled = true;
   // show summary immediately
   showSummaryBtn.click();
 }
-
-endSessionBtn.addEventListener('click', () => {
-  if (!sessionActive) return;
-  if (confirm('セッションを終了しますか？')) endSession();
-});
 
 // ==== Restart Session (keep runners, reset laps & timer) ====
 const restartSessionBtn = document.getElementById('restartSession');
@@ -333,7 +428,6 @@ restartSessionBtn.addEventListener('click', () => {
   sessionActive = true;
   document.querySelectorAll('.runner-btn').forEach(b => b.disabled = false);
   recordAllBtn.disabled = false;
-  endSessionBtn.disabled = false;
   restartSessionBtn.disabled = false;
   resultContainer.innerHTML = '';
   summaryContainer.innerHTML = '';
@@ -342,6 +436,39 @@ restartSessionBtn.addEventListener('click', () => {
   stopTrackAnimation();
   startTrackAnimation();
   showRecordingBtn.click();
+  setMainActionMode('end');
+});
+
+// ==== Full Reset (all runners + laps) ====
+resetAllBtn.addEventListener('click', () => {
+  if (!confirm('全てのランナーとラップ記録を削除します。よろしいですか？')) return;
+  runners = [];
+  laps = [];
+  sessionActive = false;
+  stopTimer();
+  stopTrackAnimation();
+  timerDisplay.textContent = '00:00.00';
+  renderRunnerList();
+  resultContainer.innerHTML = '';
+  summaryContainer.innerHTML = '';
+  runnerButtonsDiv.innerHTML = '';
+  registrationSection.classList.remove('hidden');
+  sessionSetupSection.classList.remove('hidden');
+  recordingView.classList.add('hidden');
+  trackSection.classList.add('hidden');
+  resultSection.classList.add('hidden');
+  summaryView.classList.add('hidden');
+  showRecordingBtn.classList.add('active');
+  showSummaryBtn.classList.remove('active');
+  setMainActionMode('start');
+});
+
+// ==== Guard against accidental page reload / close ====
+window.addEventListener('beforeunload', (e) => {
+  if (sessionActive || laps.length > 0) {
+    e.preventDefault();
+    e.returnValue = '';
+  }
 });
 
 // ==== CSV Export ====
