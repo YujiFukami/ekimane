@@ -2,7 +2,7 @@
 
 > 陸上・駅伝部のマネージャー向け、スマホで使えるラップタイム計測Webアプリ
 
-[![App](https://img.shields.io/badge/▶%20Launch%20App-brightgreen)](https://ekimane-lfqjoymif-yujifukamis-projects.vercel.app/)
+[![App](https://img.shields.io/badge/▶%20Launch%20App-brightgreen)](https://ekimane.vercel.app/)
 [![GitHub](https://img.shields.io/badge/GitHub-YujiFukami%2Fekimane-181717?logo=github)](https://github.com/YujiFukami/ekimane)
 
 ---
@@ -11,7 +11,7 @@
 
 | 種類 | URL |
 |------|-----|
-| 🌐 アプリ（Vercel） | [https://ekimane-lfqjoymif-yujifukamis-projects.vercel.app/](https://ekimane-lfqjoymif-yujifukamis-projects.vercel.app/) |
+| 🌐 アプリ（Vercel） | [https://ekimane.vercel.app/](https://ekimane.vercel.app/) |
 | 💻 GitHub リポジトリ | [https://github.com/YujiFukami/ekimane](https://github.com/YujiFukami/ekimane) |
 | 🏢 会社ホームページ | [https://www.softex-celware.com/](https://www.softex-celware.com/) |
 
